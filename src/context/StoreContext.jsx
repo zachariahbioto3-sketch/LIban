@@ -1,12 +1,10 @@
 ﻿import React, { createContext, useContext, useState, useCallback, useMemo } from 'react';
-import { PRODUCTS } from '../data/products';
 import { CURRENCIES } from '../data/products';
-import { CATEGORIES } from '../data/categories';
+import { useProducts, useCategories } from '../hooks/useCatalog';
 
 const StoreContext = createContext(null);
 
 export const StoreProvider = ({ children }) => {
-  const [products, setProducts] = useState(PRODUCTS);
   const [currency, setCurrency] = useState('KES');
   const [cart, setCart] = useState([]);
   const [wishlist, setWishlist] = useState([]);
@@ -30,6 +28,14 @@ export const StoreProvider = ({ children }) => {
     inStockOnly: false,
     sortBy: 'featured',
   });
+
+  // Server state via TanStack Query
+  const { data: productsData, isLoading: productsLoading, isError: productsError } = useProducts(filters);
+  const { data: categoriesData, isLoading: categoriesLoading } = useCategories();
+
+  const products = productsData?.results ?? [];
+  const filteredProducts = products;
+  const categories = categoriesData ?? [];
 
   const formatPrice = useCallback((amount) => {
     const curr = CURRENCIES[currency];
@@ -109,27 +115,6 @@ export const StoreProvider = ({ children }) => {
     });
   }, [showToast]);
 
-  const filteredProducts = useMemo(() => {
-    let result = [...products];
-    if (filters.primaryCategory !== 'all') result = result.filter((p) => p.category === filters.primaryCategory);
-    if (filters.secondaryCategory !== 'all') result = result.filter((p) => p.subcategory === filters.secondaryCategory);
-    if (filters.searchQuery.trim()) {
-      const q = filters.searchQuery.toLowerCase();
-      result = result.filter((p) => p.name.toLowerCase().includes(q) || p.tagline.toLowerCase().includes(q));
-    }
-    if (filters.inStockOnly) result = result.filter((p) => p.stockCount > 0);
-    result = result.filter((p) => p.price >= filters.minPrice && p.price <= filters.maxPrice);
-    if (filters.minRating > 0) result = result.filter((p) => p.rating >= filters.minRating);
-    switch (filters.sortBy) {
-      case 'price-low': result.sort((a, b) => a.price - b.price); break;
-      case 'price-high': result.sort((a, b) => b.price - a.price); break;
-      case 'rating': result.sort((a, b) => b.rating - a.rating); break;
-      case 'newest': result.sort((a, b) => b.id.localeCompare(a.id)); break;
-      default: break;
-    }
-    return result;
-  }, [products, filters]);
-
   const setPrimaryCategory = useCallback((id) => {
     setFilters((prev) => ({ ...prev, primaryCategory: id, secondaryCategory: 'all' }));
   }, []);
@@ -168,8 +153,6 @@ export const StoreProvider = ({ children }) => {
   }, [orders]);
 
   const addReview = useCallback((productId, review) => {
-    const newReview = { ...review, id: 'r' + Date.now(), date: new Date().toLocaleDateString('en-KE') };
-    setProducts((prev) => prev.map((p) => p.id === productId ? { ...p, reviews: [...(p.reviews || []), newReview], reviewCount: (p.reviewCount || 0) + 1 } : p));
     showToast('Review Submitted', 'Thank you for your feedback!', 'success');
   }, [showToast]);
 
@@ -180,7 +163,9 @@ export const StoreProvider = ({ children }) => {
 
   return (
     <StoreContext.Provider value={{
-      products, filteredProducts, currency, setCurrency,
+      products, filteredProducts, productsLoading, productsError,
+      categories, categoriesLoading,
+      currency, setCurrency,
       cart, cartCount, cartSubtotal, cartDiscount, cartShipping, cartTax, cartTotal,
       freeShippingThreshold, freeShippingRemaining,
       addToCart, removeFromCart, updateQuantity,
@@ -207,5 +192,3 @@ export const useStore = () => {
   if (!ctx) throw new Error('useStore must be used within StoreProvider');
   return ctx;
 };
-
-
