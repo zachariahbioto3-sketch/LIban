@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { useStore } from '../../context/StoreContext';
 import { X, ShoppingBag, Trash2, Plus, Minus, Tag, Truck, ArrowRight, ShieldCheck } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -7,8 +7,6 @@ export const CartDrawer = () => {
   const { cart, cartDrawerOpen, setCartDrawerOpen, removeFromCart, updateQuantity, cartCount, cartSubtotal, cartDiscount, cartShipping, cartTax, cartTotal, freeShippingThreshold, freeShippingRemaining, formatPrice, activeCoupon, applyCoupon, removeCoupon, setCheckoutModalOpen, setSelectedProduct } = useStore();
   const [couponInput, setCouponInput] = useState('');
   const [couponError, setCouponError] = useState('');
-
-  if (!cartDrawerOpen) return null;
 
   const handleApplyCoupon = (e) => {
     e.preventDefault();
@@ -21,6 +19,7 @@ export const CartDrawer = () => {
 
   const progress = Math.min(100, Math.round((cartSubtotal / freeShippingThreshold) * 100));
 
+  if (!cartDrawerOpen) return null;
   return (
     <div className="fixed inset-0 z-50 flex justify-end">
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setCartDrawerOpen(false)} className="fixed inset-0 bg-black/50 backdrop-blur-sm" />
@@ -118,7 +117,7 @@ export const CartDrawer = () => {
             </button>
             <div className="flex items-center justify-center gap-1.5 text-xs text-liban-muted">
               <ShieldCheck className="w-3.5 h-3.5 text-green-600" />
-              M-Pesa & Card � Secure Checkout
+              M-Pesa & Card • Secure Checkout
             </div>
           </div>
         )}
@@ -126,3 +125,6 @@ export const CartDrawer = () => {
     </div>
   );
 };
+
+
+

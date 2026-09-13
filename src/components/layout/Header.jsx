@@ -1,7 +1,7 @@
-import React, { useState, useRef, useEffect, useMemo } from 'react';
+﻿import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { useStore } from '../../context/StoreContext';
 import { LibanLogo } from '../ui/LibanLogo';
-import { Search, ShoppingBag, Heart, X, Menu } from 'lucide-react';
+import { Search, ShoppingBag, Heart } from 'lucide-react';
 
 export const Header = () => {
   const { cartCount, cartSubtotal, formatPrice, wishlist, filters, setFilters, setCartDrawerOpen, setWishlistDrawerOpen, products, setSelectedProduct } = useStore();
@@ -25,16 +25,21 @@ export const Header = () => {
   return (
     <div className="bg-white border-b border-liban-border nav-shadow">
       <div className="max-w-7xl mx-auto px-4 py-3 flex items-center gap-4">
-        <div className="flex items-center gap-2">
-          <div className="flex items-center gap-2 bg-liban-dark text-white px-3 py-2 rounded">
-            <ShoppingBag className="w-4 h-4" />
-            <span className="text-xs font-bold">{formatPrice(cartSubtotal)}</span>
-            {cartCount > 0 && <span className="bg-brand-red text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold">{cartCount}</span>}
-          </div>
-        </div>
+
+        <button onClick={() => setCartDrawerOpen(true)} className="flex items-center gap-2 bg-liban-dark text-white px-3 py-2 rounded hover:bg-gray-800 transition-colors cursor-pointer shrink-0">
+          <ShoppingBag className="w-4 h-4" />
+          <span className="text-xs font-bold">{formatPrice(cartSubtotal)}</span>
+          {cartCount > 0 && (
+            <span className="bg-brand-red text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold">
+              {cartCount}
+            </span>
+          )}
+        </button>
+
         <a href="#" className="hidden sm:flex items-center gap-1 text-liban-muted text-xs hover:text-brand-red transition-colors">
           <span className="font-semibold">M-PESA ACCEPTED</span>
         </a>
+
         <div className="flex-1 relative" ref={searchRef}>
           <div className="flex border-2 border-brand-red rounded overflow-hidden">
             <select className="px-2 text-xs border-r border-gray-200 focus:outline-none bg-gray-50 text-gray-600">
@@ -66,13 +71,18 @@ export const Header = () => {
             </div>
           )}
         </div>
+
         <LibanLogo size="lg" />
-        <div className="flex items-center gap-2">
-          <button onClick={() => setWishlistDrawerOpen(true)} className="relative p-2 text-liban-muted hover:text-brand-red transition-colors cursor-pointer">
-            <Heart className="w-5 h-5" />
-            {wishlist.length > 0 && <span className="absolute -top-1 -right-1 bg-brand-red text-white text-xs w-4 h-4 rounded-full flex items-center justify-center font-bold">{wishlist.length}</span>}
-          </button>
-        </div>
+
+        <button onClick={() => setWishlistDrawerOpen(true)} className="relative p-2 text-liban-muted hover:text-brand-red transition-colors cursor-pointer shrink-0">
+          <Heart className="w-5 h-5" />
+          {wishlist.length > 0 && (
+            <span className="absolute -top-1 -right-1 bg-brand-red text-white text-xs w-4 h-4 rounded-full flex items-center justify-center font-bold">
+              {wishlist.length}
+            </span>
+          )}
+        </button>
+
       </div>
     </div>
   );

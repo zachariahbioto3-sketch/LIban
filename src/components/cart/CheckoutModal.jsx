@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { useStore } from '../../context/StoreContext';
 import confetti from 'canvas-confetti';
 import { X, Lock, ArrowRight, ArrowLeft, ShieldCheck, CheckCircle2, Package, Truck, Smartphone } from 'lucide-react';
@@ -92,7 +92,7 @@ export const CheckoutModal = () => {
                 </div>
               </div>
               <div className="flex justify-end">
-                <button onClick={() => setStep(2)} className="px-6 py-2.5 bg-brand-red text-white rounded font-semibold text-sm hover:bg-brand-redDark transition-colors flex items-center gap-2 cursor-pointer">
+                <button onClick={() => { if (!address.fullName.trim() || !address.email.trim() || !address.phone.trim() || !address.street.trim()) { alert('Please fill in all delivery fields before continuing.'); return; } setStep(2); }} className="px-6 py-2.5 bg-brand-red text-white rounded font-semibold text-sm hover:bg-brand-redDark transition-colors flex items-center gap-2 cursor-pointer">
                   Continue to Payment <ArrowRight className="w-4 h-4" />
                 </button>
               </div>
@@ -181,7 +181,7 @@ export const CheckoutModal = () => {
                 </div>
               </div>
               <div className="flex items-center justify-between pt-2">
-                <button onClick={() => setStep(2)} className="flex items-center gap-1.5 text-sm font-semibold text-liban-muted hover:text-liban-dark cursor-pointer"><ArrowLeft className="w-4 h-4" /> Back</button>
+                <button onClick={() => { if (!address.fullName.trim() || !address.email.trim() || !address.phone.trim() || !address.street.trim()) { alert('Please fill in all delivery fields before continuing.'); return; } setStep(2); }} className="flex items-center gap-1.5 text-sm font-semibold text-liban-muted hover:text-liban-dark cursor-pointer"><ArrowLeft className="w-4 h-4" /> Back</button>
                 <button onClick={handlePlaceOrder} disabled={isProcessing} className="px-8 py-3 bg-green-600 text-white rounded font-bold text-sm hover:bg-green-700 transition-colors flex items-center gap-2 cursor-pointer disabled:opacity-50">
                   <ShieldCheck className="w-4 h-4" />
                   {isProcessing ? 'Processing...' : 'Confirm & Place Order'}
@@ -216,3 +216,4 @@ export const CheckoutModal = () => {
     </div>
   );
 };
+

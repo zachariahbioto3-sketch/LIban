@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { useStore } from '../../context/StoreContext';
 import { X, Heart, ShoppingBag, Trash2 } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -6,8 +6,9 @@ import { motion } from 'framer-motion';
 export const WishlistDrawer = () => {
   const { wishlist, wishlistDrawerOpen, setWishlistDrawerOpen, toggleWishlist, addToCart, formatPrice, setSelectedProduct } = useStore();
 
-  if (!wishlistDrawerOpen) return null;
 
+
+  if (!wishlistDrawerOpen) return null;
   return (
     <div className="fixed inset-0 z-50 flex justify-end">
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setWishlistDrawerOpen(false)} className="fixed inset-0 bg-black/50 backdrop-blur-sm" />
@@ -54,3 +55,5 @@ export const WishlistDrawer = () => {
     </div>
   );
 };
+
+

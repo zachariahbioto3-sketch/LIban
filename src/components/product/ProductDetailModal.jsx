@@ -1,7 +1,8 @@
-import React, { useState, useRef } from 'react';
+ï»¿import React, { useState, useRef } from 'react';
 import { useStore } from '../../context/StoreContext';
-import { X, Star, Heart, ShoppingBag, Zap, Truck, ShieldCheck, RefreshCw, Check, MessageSquarePlus, Share2, ChevronRight, Minus, Plus } from 'lucide-react';
+import { X, Star, Heart, ShoppingBag, Zap, Truck, ShieldCheck, RefreshCw, Check, MessageSquarePlus, Share2, ChevronRight, Minus, Plus, Sparkles } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { ProductRecommendations } from './ProductRecommendations';
 
 export const ProductDetailModal = () => {
   const { selectedProduct, setSelectedProduct, formatPrice, addToCart, quickBuyProduct, isInWishlist, toggleWishlist, addReview, showToast } = useStore();
@@ -15,6 +16,8 @@ export const ProductDetailModal = () => {
   const [ratingScore, setRatingScore] = useState(5);
   const [reviewTitle, setReviewTitle] = useState('');
   const [reviewComment, setReviewComment] = useState('');
+  const modalScrollRef = useRef(null);
+  const recommendationsRef = useRef(null);
 
   if (!selectedProduct) return null;
   const product = selectedProduct;
@@ -41,7 +44,7 @@ export const ProductDetailModal = () => {
           <button onClick={() => setSelectedProduct(null)} className="absolute top-4 right-4 z-20 p-2 bg-white border border-liban-border rounded-full text-liban-muted hover:text-liban-dark hover:border-brand-red transition-all cursor-pointer">
             <X className="w-5 h-5" />
           </button>
-          <div className="max-h-[90vh] overflow-y-auto">
+          <div ref={modalScrollRef} className="max-h-[90vh] overflow-y-auto">
             <div className="grid grid-cols-1 md:grid-cols-2">
               <div className="p-6 bg-gray-50 border-r border-liban-border">
                 <div className="relative aspect-square rounded overflow-hidden bg-white border border-liban-border mb-4">
@@ -137,7 +140,7 @@ export const ProductDetailModal = () => {
                   </div>
                   <button onClick={handleAddToCart} className="flex-1 py-2.5 bg-brand-red text-white rounded font-bold text-sm hover:bg-brand-redDark transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-sm">
                     <ShoppingBag className="w-4 h-4" />
-                    Add to Cart — {formatPrice(product.price * quantity)}
+                    Add to Cart
                   </button>
                   <button onClick={() => toggleWishlist(product)} className={'p-2.5 rounded border transition-all cursor-pointer ' + (inWishlist ? 'border-brand-red bg-red-50 text-brand-red' : 'border-liban-border text-liban-muted hover:border-brand-red hover:text-brand-red')}>
                     <Heart className={'w-4 h-4 ' + (inWishlist ? 'fill-current' : '')} />
@@ -145,7 +148,7 @@ export const ProductDetailModal = () => {
                 </div>
                 <button onClick={handleBuyNow} className="w-full py-2.5 bg-liban-dark text-white rounded font-bold text-sm hover:bg-gray-800 transition-colors flex items-center justify-center gap-2 cursor-pointer">
                   <Zap className="w-4 h-4 text-brand-red fill-current" />
-                  Buy Now — Pay via M-Pesa or Card
+                  Buy Now - Pay via M-Pesa or Card
                 </button>
                 <div className="border-t border-liban-border pt-4">
                   <div className="flex gap-4 border-b border-liban-border mb-4">
@@ -174,6 +177,16 @@ export const ProductDetailModal = () => {
                         </div>
                       ))}
                       <p className="text-xs text-liban-muted pt-2 italic">{product.shippingInfo}</p>
+                      <button
+                        onClick={() => recommendationsRef.current?.scrollIntoView({ behavior: 'smooth' })}
+                        className="w-full mt-3 py-2 px-3 rounded bg-red-50 hover:bg-red-100 text-brand-red text-xs font-bold transition-colors flex items-center justify-between cursor-pointer border border-red-200"
+                      >
+                        <div className="flex items-center gap-1.5">
+                          <Sparkles className="w-3.5 h-3.5" />
+                          <span>Bundle and Save 10% with accessories</span>
+                        </div>
+                        <ChevronRight className="w-4 h-4" />
+                      </button>
                     </div>
                   )}
                   {activeTab === 'reviews' && (
@@ -199,9 +212,15 @@ export const ProductDetailModal = () => {
                               </select>
                             </div>
                           </div>
-                          <input type="text" placeholder="Review title" value={reviewTitle} onChange={(e) => setReviewTitle(e.target.value)} className="w-full px-2 py-1.5 border border-liban-border rounded text-xs focus:outline-none focus:border-brand-red" />
-                          <textarea required rows={3} placeholder="Your review..." value={reviewComment} onChange={(e) => setReviewComment(e.target.value)} className="w-full px-2 py-1.5 border border-liban-border rounded text-xs focus:outline-none focus:border-brand-red resize-none" />
-                          <button type="submit" className="w-full py-2 bg-brand-red text-white rounded font-bold text-xs hover:bg-brand-redDark transition-colors cursor-pointer">Submit Review</button>
+                          <div>
+                            <label className="text-xs font-semibold text-liban-muted block mb-1">Review Title</label>
+                            <input type="text" value={reviewTitle} onChange={(e) => setReviewTitle(e.target.value)} className="w-full px-2 py-1.5 border border-liban-border rounded text-xs focus:outline-none focus:border-brand-red" />
+                          </div>
+                          <div>
+                            <label className="text-xs font-semibold text-liban-muted block mb-1">Comment</label>
+                            <textarea required value={reviewComment} onChange={(e) => setReviewComment(e.target.value)} rows={3} className="w-full px-2 py-1.5 border border-liban-border rounded text-xs focus:outline-none focus:border-brand-red resize-none" />
+                          </div>
+                          <button type="submit" className="w-full py-2 bg-brand-red text-white rounded text-xs font-bold hover:bg-brand-redDark transition-colors cursor-pointer">Submit Review</button>
                         </form>
                       )}
                       <div className="space-y-3 max-h-48 overflow-y-auto">
@@ -225,6 +244,18 @@ export const ProductDetailModal = () => {
                   )}
                 </div>
               </div>
+            </div>
+            <div ref={recommendationsRef} className="p-6 bg-gray-50 border-t border-liban-border">
+              <ProductRecommendations
+                currentProduct={product}
+                onSelectProduct={(newProduct) => {
+                  setSelectedProduct(newProduct);
+                  setActiveImg(0);
+                  setSelectedColor(undefined);
+                  setSelectedSize(undefined);
+                  if (modalScrollRef.current) modalScrollRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+              />
             </div>
           </div>
         </motion.div>

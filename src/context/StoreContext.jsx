@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useCallback, useMemo } from 'react';
+﻿import React, { createContext, useContext, useState, useCallback, useMemo } from 'react';
 import { PRODUCTS } from '../data/products';
 import { CURRENCIES } from '../data/products';
 import { CATEGORIES } from '../data/categories';
@@ -6,7 +6,7 @@ import { CATEGORIES } from '../data/categories';
 const StoreContext = createContext(null);
 
 export const StoreProvider = ({ children }) => {
-  const [products] = useState(PRODUCTS);
+  const [products, setProducts] = useState(PRODUCTS);
   const [currency, setCurrency] = useState('KES');
   const [cart, setCart] = useState([]);
   const [wishlist, setWishlist] = useState([]);
@@ -168,6 +168,8 @@ export const StoreProvider = ({ children }) => {
   }, [orders]);
 
   const addReview = useCallback((productId, review) => {
+    const newReview = { ...review, id: 'r' + Date.now(), date: new Date().toLocaleDateString('en-KE') };
+    setProducts((prev) => prev.map((p) => p.id === productId ? { ...p, reviews: [...(p.reviews || []), newReview], reviewCount: (p.reviewCount || 0) + 1 } : p));
     showToast('Review Submitted', 'Thank you for your feedback!', 'success');
   }, [showToast]);
 
@@ -205,3 +207,5 @@ export const useStore = () => {
   if (!ctx) throw new Error('useStore must be used within StoreProvider');
   return ctx;
 };
+
+

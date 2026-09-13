@@ -1,0 +1,80 @@
+﻿export const LIBAN_TELEMETRY = {
+  default: {
+    vehicleId: 'LIB-VAN-047',
+    vehiclePlate: 'KDD 847G',
+    vehicleType: 'van',
+    model: 'Toyota HiAce Cargo',
+    capacityPercent: 72,
+    speed: '38 km/h',
+    distanceRemaining: '6.4 km',
+    etaMinutes: 32,
+    status: 'On-Route',
+    driver: {
+      name: 'Brian Otieno',
+      phone: '+254 712 345 678',
+      rating: 4.94,
+      completedTrips: 1240,
+    },
+    cargoPhotos: [
+      {
+        id: 'cp-1',
+        title: 'Warehouse Inspection',
+        location: 'Liban Warehouse, Industrial Area, Nairobi',
+        timestamp: '08:30 AM',
+        imageUrl: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=400&auto=format&fit=crop&q=80',
+        tag: 'Inspected',
+      },
+      {
+        id: 'cp-2',
+        title: 'Package Sealed & Loaded',
+        location: 'Liban Fulfilment Bay 3, Nairobi',
+        timestamp: '11:45 AM',
+        imageUrl: 'https://images.unsplash.com/photo-1553413077-190dd305871c?w=400&auto=format&fit=crop&q=80',
+        tag: 'Loaded',
+      },
+      {
+        id: 'cp-3',
+        title: 'In Transit to Destination',
+        location: 'Mombasa Road, Nairobi',
+        timestamp: '01:15 PM',
+        imageUrl: 'https://images.unsplash.com/photo-1616401784845-180882ba9ba8?w=400&auto=format&fit=crop&q=80',
+        tag: 'In Transit',
+      },
+    ],
+  },
+};
+
+export const LIBAN_WAYPOINTS = [
+  {
+    id: 'wp-1',
+    name: 'Liban Warehouse',
+    location: 'Industrial Area, Nairobi',
+    status: 'completed',
+    time: '08:15 AM',
+    description: 'Item quality checked, packed in protective packaging and barcode verified.',
+  },
+  {
+    id: 'wp-2',
+    name: 'Liban Fulfilment Centre',
+    location: 'Baba Dogo Road, Nairobi',
+    status: 'completed',
+    time: '11:40 AM',
+    description: 'Package sorted and assigned to delivery rider.',
+  },
+  {
+    id: 'wp-3',
+    name: 'Out for Delivery',
+    location: 'En route to destination',
+    status: 'in-progress',
+    time: '01:38 PM',
+    description: 'Rider is on the way. Stay close to your phone.',
+  },
+  {
+    id: 'wp-4',
+    name: 'Delivery Address',
+    location: 'Your doorstep',
+    status: 'upcoming',
+    time: 'Est. 02:30 PM',
+    description: 'Doorstep handover. Have your ID ready.',
+  },
+];
