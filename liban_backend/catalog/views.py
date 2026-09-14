@@ -1,10 +1,12 @@
-from rest_framework import viewsets, mixins
+from rest_framework import viewsets, mixins, status
+from rest_framework.decorators import action
+from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter, OrderingFilter
 
-from .models import Category, Product
-from .serializers import CategorySerializer, ProductListSerializer, ProductDetailSerializer
+from .models import Category, Product, Review
+from .serializers import CategorySerializer, ProductListSerializer, ProductDetailSerializer, ReviewSerializer
 from .filters import ProductFilter
 
 
@@ -26,7 +28,8 @@ class ProductViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.
     def get_queryset(self):
         if self.action == 'retrieve':
             return Product.objects.prefetch_related(
-                'images', 'colors', 'features', 'category__subcategories', 'subcategory'
+                'images', 'colors', 'features', 'reviews',
+                'category__subcategories', 'subcategory'
             ).all()
         return Product.objects.prefetch_related('images').select_related('category', 'subcategory').all()
 
@@ -34,3 +37,21 @@ class ProductViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.
         if self.action == 'retrieve':
             return ProductDetailSerializer
         return ProductListSerializer
+
+    @action(detail=True, methods=['post'], url_path='reviews', permission_classes=[AllowAny])
+    def add_review(self, request, pk=None):
+        product = self.get_object()
+        data = {
+            'author': request.data.get('author', ''),
+            'rating': request.data.get('rating', 5),
+            'comment': request.data.get('comment', ''),
+        }
+        serializer = ReviewSerializer(data=data)
+        if serializer.is_valid():
+            review = serializer.save(product=product)
+            ratings = list(product.reviews.values_list('rating', flat=True))
+            product.review_count = len(ratings)
+            product.rating = round(sum(ratings) / len(ratings), 1) if ratings else 0
+            product.save(update_fields=['review_count', 'rating'])
+            return Response(ReviewSerializer(review).data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

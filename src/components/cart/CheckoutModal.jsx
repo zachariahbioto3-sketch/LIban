@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { useStore } from '../../context/StoreContext';
 import confetti from 'canvas-confetti';
 import { X, Lock, ArrowRight, ArrowLeft, ShieldCheck, CheckCircle2, Package, Truck, Smartphone } from 'lucide-react';
@@ -148,7 +148,7 @@ export const CheckoutModal = () => {
               <div className="border border-liban-border rounded overflow-hidden divide-y divide-liban-border max-h-48 overflow-y-auto">
                 {cart.map((item) => (
                   <div key={item.id} className="flex items-center gap-3 p-3 text-xs">
-                    <img src={item.product.images[0]} alt={item.product.name} className="w-10 h-10 rounded object-cover bg-gray-50" referrerPolicy="no-referrer" />
+                    <img src={item.product.images?.[0]} alt={item.product.name} className="w-10 h-10 rounded object-cover bg-gray-50" referrerPolicy="no-referrer" />
                     <div className="flex-1">
                       <p className="font-semibold text-liban-dark">{item.product.name}</p>
                       <p className="text-liban-muted">Qty: {item.quantity}</p>
@@ -216,4 +216,5 @@ export const CheckoutModal = () => {
     </div>
   );
 };
+
 

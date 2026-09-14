@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { useStore } from '../../context/StoreContext';
 import { X, ShoppingBag, Trash2, Plus, Minus, Tag, Truck, ArrowRight, ShieldCheck } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -57,7 +57,7 @@ export const CartDrawer = () => {
             cart.map((item) => (
               <div key={item.id} className="p-3 border border-liban-border rounded bg-white flex gap-3 items-center hover:border-brand-red transition-colors group">
                 <div onClick={() => { setSelectedProduct(item.product); setCartDrawerOpen(false); }} className="w-16 h-16 rounded border border-liban-border overflow-hidden bg-gray-50 shrink-0 cursor-pointer">
-                  <img src={item.product.images[0]} alt={item.product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform" referrerPolicy="no-referrer" />
+                  <img src={item.product.images?.[0]} alt={item.product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform" referrerPolicy="no-referrer" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <h4 className="text-xs font-bold text-liban-dark truncate">{item.product.name}</h4>
@@ -117,7 +117,7 @@ export const CartDrawer = () => {
             </button>
             <div className="flex items-center justify-center gap-1.5 text-xs text-liban-muted">
               <ShieldCheck className="w-3.5 h-3.5 text-green-600" />
-              M-Pesa & Card • Secure Checkout
+              M-Pesa & Card � Secure Checkout
             </div>
           </div>
         )}
@@ -125,6 +125,7 @@ export const CartDrawer = () => {
     </div>
   );
 };
+
 
 
 

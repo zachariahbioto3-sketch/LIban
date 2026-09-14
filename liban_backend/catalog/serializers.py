@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Category, SubCategory, Product, ProductImage, ProductColor, ProductFeature
+from .models import Category, SubCategory, Product, ProductImage, ProductColor, ProductFeature, Review
 
 
 class SubCategorySerializer(serializers.ModelSerializer):
@@ -10,7 +10,6 @@ class SubCategorySerializer(serializers.ModelSerializer):
 
 class CategorySerializer(serializers.ModelSerializer):
     subcategories = SubCategorySerializer(many=True, read_only=True)
-
     class Meta:
         model = Category
         fields = ['id', 'name', 'slug', 'icon', 'subcategories']
@@ -32,6 +31,13 @@ class ProductFeatureSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductFeature
         fields = ['text', 'order']
+
+
+class ReviewSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Review
+        fields = ['id', 'author', 'rating', 'comment', 'date', 'verified']
+        read_only_fields = ['id', 'date', 'verified']
 
 
 class ProductListSerializer(serializers.ModelSerializer):
@@ -60,6 +66,7 @@ class ProductDetailSerializer(serializers.ModelSerializer):
     images = ProductImageSerializer(many=True, read_only=True)
     colors = ProductColorSerializer(many=True, read_only=True)
     features = ProductFeatureSerializer(many=True, read_only=True)
+    reviews = ReviewSerializer(many=True, read_only=True)
 
     class Meta:
         model = Product
@@ -69,6 +76,6 @@ class ProductDetailSerializer(serializers.ModelSerializer):
             'price', 'original_price',
             'stock_count', 'rating', 'review_count',
             'tags', 'specs', 'shipping_info',
-            'images', 'colors', 'features',
+            'images', 'colors', 'features', 'reviews',
             'created_at',
         ]

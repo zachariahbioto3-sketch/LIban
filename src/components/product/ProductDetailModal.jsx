@@ -1,4 +1,4 @@
-﻿import React, { useState, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import { useStore } from '../../context/StoreContext';
 import { X, Star, Heart, ShoppingBag, Zap, Truck, ShieldCheck, RefreshCw, Check, MessageSquarePlus, Share2, ChevronRight, Minus, Plus, Sparkles } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -48,12 +48,12 @@ export const ProductDetailModal = () => {
             <div className="grid grid-cols-1 md:grid-cols-2">
               <div className="p-6 bg-gray-50 border-r border-liban-border">
                 <div className="relative aspect-square rounded overflow-hidden bg-white border border-liban-border mb-4">
-                  <img src={product.images[activeImg] || product.images[0]} alt={product.name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                  <img src={product.images?.[activeImg] || product.images?.[0]} alt={product.name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
                   {discount > 0 && <div className="ribbon">{discount}% OFF</div>}
                 </div>
-                {product.images.length > 1 && (
+                {product.images?.length > 1 && (
                   <div className="flex gap-2 overflow-x-auto pb-1">
-                    {product.images.map((img, idx) => (
+                    {product.images?.map((img, idx) => (
                       <button key={idx} onClick={() => setActiveImg(idx)} className={'w-16 h-16 rounded border-2 overflow-hidden shrink-0 transition-all cursor-pointer ' + (activeImg === idx ? 'border-brand-red' : 'border-liban-border opacity-60 hover:opacity-100')}>
                         <img src={img} alt="" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
                       </button>
@@ -263,3 +263,6 @@ export const ProductDetailModal = () => {
     </AnimatePresence>
   );
 };
+
+
+

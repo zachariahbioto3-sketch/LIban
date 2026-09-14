@@ -1,4 +1,4 @@
-﻿import React, { createContext, useContext, useState, useCallback, useMemo } from 'react';
+import React, { createContext, useContext, useState, useCallback, useMemo } from 'react';
 import { CURRENCIES } from '../data/products';
 import { useProducts, useCategories } from '../hooks/useCatalog';
 
@@ -152,8 +152,19 @@ export const StoreProvider = ({ children }) => {
     return orders.find((o) => o.orderNumber.toLowerCase() === query.toLowerCase() || o.shippingAddress?.email?.toLowerCase() === query.toLowerCase());
   }, [orders]);
 
-  const addReview = useCallback((productId, review) => {
-    showToast('Review Submitted', 'Thank you for your feedback!', 'success');
+  const addReview = useCallback(async (productId, review) => {
+    try {
+      const base = import.meta.env.VITE_API_BASE ?? 'http://localhost:8001/api';
+      const res = await fetch(\/catalog/products/\/reviews/, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ author: review.author, rating: review.rating, comment: review.comment }),
+      });
+      if (!res.ok) throw new Error();
+      showToast('Review Submitted', 'Thank you for your feedback!', 'success');
+    } catch {
+      showToast('Error', 'Failed to submit review.', 'error');
+    }
   }, [showToast]);
 
   const quickBuyProduct = useCallback((product, selectedColor, selectedSize) => {
@@ -192,3 +203,5 @@ export const useStore = () => {
   if (!ctx) throw new Error('useStore must be used within StoreProvider');
   return ctx;
 };
+
+

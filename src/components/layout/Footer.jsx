@@ -88,7 +88,7 @@ export const Footer = () => {
           </div>
         </div>
         <div className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-gray-500">
-          <p>© {new Date().getFullYear()} Liban E-Commerce Ltd. All rights reserved.</p>
+          <p>ï¿½ {new Date().getFullYear()} Liban E-Commerce Ltd. All rights reserved.</p>
           <div className="flex items-center gap-2">
             {['M-PESA', 'VISA', 'MASTERCARD', 'COD'].map((p) => (
               <span key={p} className="px-2 py-0.5 rounded bg-gray-900 border border-gray-800 text-gray-400 text-xs font-mono">{p}</span>

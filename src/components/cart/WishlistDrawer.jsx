@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { useStore } from '../../context/StoreContext';
 import { X, Heart, ShoppingBag, Trash2 } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -34,12 +34,12 @@ export const WishlistDrawer = () => {
             wishlist.map((product) => (
               <div key={product.id} className="p-3 border border-liban-border rounded bg-white flex gap-3 items-center hover:border-brand-red transition-colors group">
                 <div onClick={() => { setSelectedProduct(product); setWishlistDrawerOpen(false); }} className="w-16 h-16 rounded border border-liban-border overflow-hidden bg-gray-50 shrink-0 cursor-pointer">
-                  <img src={product.images[0]} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform" referrerPolicy="no-referrer" />
+                  <img src={product.images?.[0]} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform" referrerPolicy="no-referrer" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <h4 className="text-xs font-bold text-liban-dark truncate">{product.name}</h4>
                   <span className="text-sm font-bold text-brand-red font-mono">{formatPrice(product.price)}</span>
-                  {product.originalPrice && <span className="text-xs text-liban-muted line-through font-mono ml-1">{formatPrice(product.originalPrice)}</span>}
+                  {(product.originalPrice ?? product.original_price) && <span className="text-xs text-liban-muted line-through font-mono ml-1">{formatPrice(product.originalPrice ?? product.original_price)}</span>}
                   <div className="mt-2">
                     <button onClick={() => addToCart(product, 1, product.colors?.[0]?.name)} className="flex items-center gap-1 px-3 py-1.5 bg-brand-red text-white rounded text-xs font-bold hover:bg-brand-redDark transition-colors cursor-pointer">
                       <ShoppingBag className="w-3.5 h-3.5" /> Add to Cart
@@ -55,5 +55,7 @@ export const WishlistDrawer = () => {
     </div>
   );
 };
+
+
 
 

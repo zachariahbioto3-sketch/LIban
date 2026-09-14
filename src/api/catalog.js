@@ -1,4 +1,4 @@
-﻿import { api } from './client';
+import { api } from './client';
 
 function buildProductParams(filters = {}) {
   const params = new URLSearchParams();
@@ -29,8 +29,33 @@ function buildProductParams(filters = {}) {
   return qs ? `?${qs}` : '';
 }
 
+const normalizeProduct = (p) => ({
+  ...p,
+  price: parseFloat(p.price),
+  originalPrice: p.original_price ? parseFloat(p.original_price) : null,
+  images: p.images?.length
+    ? p.images.map(i => (typeof i === 'string' ? i : i.url))
+    : p.primary_image ? [p.primary_image] : [],
+  features: p.features?.length
+    ? p.features.map(f => (typeof f === 'string' ? f : f.text))
+    : [],
+  category: typeof p.category === 'object' ? p.category?.slug : (p.category ?? p.category_slug ?? ''),
+  reviewCount: p.review_count ?? p.reviewCount ?? 0,
+  stockCount: p.stock_count ?? p.stockCount ?? 0,
+  rating: parseFloat(p.rating) || 0,
+  shippingInfo: p.shipping_info ?? p.shippingInfo ?? '',
+  colors: p.colors ?? [],
+  sizes: p.sizes ?? [],
+  specs: p.specs ?? {},
+  reviews: p.reviews ?? [],
+  tags: p.tags ?? [],
+});
+
 export const catalogApi = {
   getCategories: () => api.get('/catalog/categories/'),
-  getProducts: (filters) => api.get(`/catalog/products/${buildProductParams(filters)}`),
-  getProduct: (id) => api.get(`/catalog/products/${id}/`),
+  getProducts: (filters) =>
+    api.get(`/catalog/products/${buildProductParams(filters)}`)
+      .then(r => ({ ...r, results: (r.results ?? []).map(normalizeProduct) })),
+  getProduct: (id) =>
+    api.get(`/catalog/products/${id}/`).then(normalizeProduct),
 };

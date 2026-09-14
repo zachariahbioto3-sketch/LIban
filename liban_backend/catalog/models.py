@@ -86,3 +86,17 @@ class ProductFeature(models.Model):
 
     class Meta:
         ordering = ['order']
+
+class Review(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='reviews')
+    author = models.CharField(max_length=100)
+    rating = models.PositiveSmallIntegerField(default=5)
+    comment = models.TextField(blank=True)
+    date = models.DateField(auto_now_add=True)
+    verified = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ['-date']
+
+    def __str__(self):
+        return f'{self.author} - {self.product.name} ({self.rating}?)'

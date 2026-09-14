@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { AnimatePresence } from 'framer-motion';
 import { StoreProvider } from './context/StoreContext';
 import { TopBar } from './components/layout/TopBar';

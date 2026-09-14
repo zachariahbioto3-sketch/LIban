@@ -1,4 +1,4 @@
-﻿import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useStore } from '../../context/StoreContext';
 import { Plus, Check, ShoppingBag, Sparkles, Zap, Star, Heart, Layers, Tag, ShieldCheck } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -89,7 +89,7 @@ export const ProductRecommendations = ({ currentProduct, onSelectProduct }) => {
             <div className="w-full sm:w-1/3 p-3 bg-white rounded border-2 border-brand-red flex flex-col items-center text-center relative">
               <span className="absolute top-2 left-2 px-2 py-0.5 rounded bg-brand-red text-white text-xs font-bold">Main</span>
               <div className="w-20 h-20 rounded overflow-hidden bg-gray-50 my-2">
-                <img src={currentProduct.images[0]} alt={currentProduct.name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                <img src={currentProduct.images?.[0]} alt={currentProduct.name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
               </div>
               <h4 className="text-xs font-bold text-liban-dark line-clamp-1 w-full">{currentProduct.name}</h4>
               <span className="text-xs font-bold text-brand-red font-mono mt-1">{formatPrice(currentProduct.price)}</span>
@@ -106,7 +106,7 @@ export const ProductRecommendations = ({ currentProduct, onSelectProduct }) => {
                       <input type="checkbox" checked={isSelected} onChange={(e) => { e.stopPropagation(); toggleBundleItem(companion.id); }} className="w-4 h-4 cursor-pointer" />
                     </div>
                     <div className="w-20 h-20 rounded overflow-hidden bg-gray-50 my-2 cursor-pointer" onClick={(e) => { e.stopPropagation(); onSelectProduct(companion); }}>
-                      <img src={companion.images[0]} alt={companion.name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                      <img src={companion.images?.[0]} alt={companion.name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
                     </div>
                     <h4 className="text-xs font-bold text-liban-dark line-clamp-1 w-full cursor-pointer hover:text-brand-red" onClick={(e) => { e.stopPropagation(); onSelectProduct(companion); }}>{companion.name}</h4>
                     <div className="flex items-center gap-1.5 mt-1 font-mono">
@@ -134,7 +134,7 @@ export const ProductRecommendations = ({ currentProduct, onSelectProduct }) => {
               </p>
             </div>
             <button onClick={handleAddBundleToCart} disabled={bundleAdded} className={'w-full py-3 rounded font-bold text-sm flex items-center justify-center gap-2 transition-all cursor-pointer shadow-sm ' + (bundleAdded ? 'bg-green-600 text-white' : 'bg-brand-red hover:bg-brand-redDark text-white')}>
-              {bundleAdded ? <><Check className="w-4 h-4" /><span>Bundle Added!</span></> : <><ShoppingBag className="w-4 h-4" /><span>Add Bundle · {formatPrice(bundleFinalTotal)}</span></>}
+              {bundleAdded ? <><Check className="w-4 h-4" /><span>Bundle Added!</span></> : <><ShoppingBag className="w-4 h-4" /><span>Add Bundle � {formatPrice(bundleFinalTotal)}</span></>}
             </button>
           </div>
         </div>
@@ -163,7 +163,7 @@ export const ProductRecommendations = ({ currentProduct, onSelectProduct }) => {
               return (
                 <motion.div key={rec.id} layout initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95 }} transition={{ duration: 0.2 }} className="group bg-white rounded border border-liban-border overflow-hidden hover:shadow-card hover:border-brand-red transition-all flex flex-col relative">
                   <div className="relative aspect-square overflow-hidden bg-gray-50">
-                    <img src={rec.images[0]} alt={rec.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" referrerPolicy="no-referrer" />
+                    <img src={rec.images?.[0]} alt={rec.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" referrerPolicy="no-referrer" />
                     <div className="absolute top-2 left-2 flex flex-col gap-1">
                       {rec.tags?.[0] && <span className="px-2 py-0.5 rounded bg-liban-dark text-white text-xs font-bold">{rec.tags[0]}</span>}
                       {discount > 0 && <span className="px-2 py-0.5 rounded bg-brand-red text-white text-xs font-bold">-{discount}%</span>}
@@ -202,3 +202,6 @@ export const ProductRecommendations = ({ currentProduct, onSelectProduct }) => {
     </div>
   );
 };
+
+
+
