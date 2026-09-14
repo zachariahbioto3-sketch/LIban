@@ -1,6 +1,7 @@
-import React, { useState, useRef } from 'react';
+﻿import React, { useState, useRef } from 'react';
 import { useStore } from '../../context/StoreContext';
-import { X, Star, Heart, ShoppingBag, Zap, Truck, ShieldCheck, RefreshCw, Check, MessageSquarePlus, Share2, ChevronRight, Minus, Plus, Sparkles } from 'lucide-react';
+import { useProductDetail } from '../../hooks/useCatalog';
+import { X, Star, Heart, ShoppingBag, Zap, Truck, ShieldCheck, RefreshCw, Check, MessageSquarePlus, Share2, ChevronRight, Minus, Plus, Sparkles, Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ProductRecommendations } from './ProductRecommendations';
 
@@ -19,12 +20,27 @@ export const ProductDetailModal = () => {
   const modalScrollRef = useRef(null);
   const recommendationsRef = useRef(null);
 
+  // Fetch full product detail from API when modal opens
+  const { data: fullProduct, isLoading } = useProductDetail(selectedProduct?.id);
+  const product = fullProduct || selectedProduct;
+
   if (!selectedProduct) return null;
-  const product = selectedProduct;
+
   const inWishlist = isInWishlist(product.id);
+
+  // Normalise field names — detail endpoint returns full objects
+  const images = product.images?.map((i) => i.url || i) ?? (product.primary_image ? [product.primary_image] : []);
+  const price = parseFloat(product.price);
+  const originalPrice = product.original_price ? parseFloat(product.original_price) : null;
+  const stockCount = product.stock_count ?? product.stockCount ?? 0;
+  const reviewCount = product.review_count ?? product.reviewCount ?? 0;
+  const shippingInfo = product.shipping_info ?? product.shippingInfo ?? '';
+  const categoryName = product.category?.name ?? product.category ?? '';
+  const features = product.features?.map((f) => f.text ?? f) ?? [];
+  const discount = originalPrice ? Math.round(((originalPrice - price) / originalPrice) * 100) : 0;
+
   const currentColor = selectedColor || product.colors?.[0]?.name;
   const currentSize = selectedSize || product.sizes?.[0];
-  const discount = product.originalPrice ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100) : 0;
 
   const handleAddToCart = () => { addToCart(product, quantity, currentColor, currentSize); };
   const handleBuyNow = () => { quickBuyProduct(product, currentColor, currentSize); setSelectedProduct(null); };
@@ -44,16 +60,21 @@ export const ProductDetailModal = () => {
           <button onClick={() => setSelectedProduct(null)} className="absolute top-4 right-4 z-20 p-2 bg-white border border-liban-border rounded-full text-liban-muted hover:text-liban-dark hover:border-brand-red transition-all cursor-pointer">
             <X className="w-5 h-5" />
           </button>
+          {isLoading && (
+            <div className="absolute inset-0 z-30 bg-white/70 flex items-center justify-center">
+              <Loader2 className="w-8 h-8 text-brand-red animate-spin" />
+            </div>
+          )}
           <div ref={modalScrollRef} className="max-h-[90vh] overflow-y-auto">
             <div className="grid grid-cols-1 md:grid-cols-2">
               <div className="p-6 bg-gray-50 border-r border-liban-border">
                 <div className="relative aspect-square rounded overflow-hidden bg-white border border-liban-border mb-4">
-                  <img src={product.images?.[activeImg] || product.images?.[0]} alt={product.name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                  <img src={images[activeImg] || images[0] || 'https://placehold.co/600x600?text=No+Image'} alt={product.name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
                   {discount > 0 && <div className="ribbon">{discount}% OFF</div>}
                 </div>
-                {product.images?.length > 1 && (
+                {images.length > 1 && (
                   <div className="flex gap-2 overflow-x-auto pb-1">
-                    {product.images?.map((img, idx) => (
+                    {images.map((img, idx) => (
                       <button key={idx} onClick={() => setActiveImg(idx)} className={'w-16 h-16 rounded border-2 overflow-hidden shrink-0 transition-all cursor-pointer ' + (activeImg === idx ? 'border-brand-red' : 'border-liban-border opacity-60 hover:opacity-100')}>
                         <img src={img} alt="" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
                       </button>
@@ -81,7 +102,7 @@ export const ProductDetailModal = () => {
               <div className="p-6 flex flex-col gap-4">
                 <div>
                   <div className="flex items-center justify-between mb-1">
-                    <span className="text-xs font-bold uppercase tracking-wider text-brand-red bg-red-50 px-2 py-0.5 rounded">{product.category}</span>
+                    <span className="text-xs font-bold uppercase tracking-wider text-brand-red bg-red-50 px-2 py-0.5 rounded">{categoryName}</span>
                     <button onClick={handleShare} className="flex items-center gap-1 text-xs text-liban-muted hover:text-brand-red cursor-pointer">
                       <Share2 className="w-3.5 h-3.5" /> Share
                     </button>
@@ -92,19 +113,19 @@ export const ProductDetailModal = () => {
                       {[1,2,3,4,5].map((s) => <Star key={s} className={'w-4 h-4 ' + (s <= Math.round(product.rating) ? 'text-yellow-400 fill-current' : 'text-gray-200')} />)}
                     </div>
                     <span className="text-xs font-bold text-liban-dark">{product.rating}</span>
-                    <span className="text-xs text-liban-muted">({product.reviewCount} reviews)</span>
+                    <span className="text-xs text-liban-muted">({reviewCount} reviews)</span>
                   </div>
                 </div>
                 <div className="p-3 bg-gray-50 border border-liban-border rounded flex items-center justify-between">
                   <div>
                     <div className="flex items-baseline gap-2">
-                      <span className="text-2xl font-black text-brand-red font-mono">{formatPrice(product.price)}</span>
-                      {product.originalPrice && <span className="text-sm text-liban-muted line-through font-mono">{formatPrice(product.originalPrice)}</span>}
+                      <span className="text-2xl font-black text-brand-red font-mono">{formatPrice(price)}</span>
+                      {originalPrice && <span className="text-sm text-liban-muted line-through font-mono">{formatPrice(originalPrice)}</span>}
                     </div>
                     <span className="text-xs text-liban-muted">VAT (16%) included</span>
                   </div>
-                  <span className={'text-xs font-bold px-2 py-1 rounded ' + (product.stockCount > 5 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800')}>
-                    {product.stockCount > 5 ? 'In Stock' : 'Only ' + product.stockCount + ' left!'}
+                  <span className={'text-xs font-bold px-2 py-1 rounded ' + (stockCount > 5 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800')}>
+                    {stockCount > 5 ? 'In Stock' : 'Only ' + stockCount + ' left!'}
                   </span>
                 </div>
                 {product.colors && product.colors.length > 0 && (
@@ -136,7 +157,7 @@ export const ProductDetailModal = () => {
                   <div className="flex items-center border border-liban-border rounded overflow-hidden">
                     <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="w-8 h-8 flex items-center justify-center text-liban-muted hover:text-liban-dark hover:bg-gray-50 transition-colors cursor-pointer font-bold"><Minus className="w-3.5 h-3.5" /></button>
                     <span className="w-10 text-center text-sm font-bold font-mono">{quantity}</span>
-                    <button onClick={() => setQuantity(Math.min(product.stockCount, quantity + 1))} className="w-8 h-8 flex items-center justify-center text-liban-muted hover:text-liban-dark hover:bg-gray-50 transition-colors cursor-pointer font-bold"><Plus className="w-3.5 h-3.5" /></button>
+                    <button onClick={() => setQuantity(Math.min(stockCount, quantity + 1))} className="w-8 h-8 flex items-center justify-center text-liban-muted hover:text-liban-dark hover:bg-gray-50 transition-colors cursor-pointer font-bold"><Plus className="w-3.5 h-3.5" /></button>
                   </div>
                   <button onClick={handleAddToCart} className="flex-1 py-2.5 bg-brand-red text-white rounded font-bold text-sm hover:bg-brand-redDark transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-sm">
                     <ShoppingBag className="w-4 h-4" />
@@ -161,7 +182,7 @@ export const ProductDetailModal = () => {
                   {activeTab === 'details' && (
                     <div className="space-y-3">
                       <p className="text-xs text-liban-muted leading-relaxed">{product.description}</p>
-                      {product.features?.map((f, i) => (
+                      {features.map((f, i) => (
                         <div key={i} className="flex items-start gap-2 text-xs text-liban-dark">
                           <Check className="w-3.5 h-3.5 text-green-600 shrink-0 mt-0.5" /> {f}
                         </div>
@@ -176,7 +197,7 @@ export const ProductDetailModal = () => {
                           <span className="font-semibold text-liban-dark">{val}</span>
                         </div>
                       ))}
-                      <p className="text-xs text-liban-muted pt-2 italic">{product.shippingInfo}</p>
+                      <p className="text-xs text-liban-muted pt-2 italic">{shippingInfo}</p>
                       <button
                         onClick={() => recommendationsRef.current?.scrollIntoView({ behavior: 'smooth' })}
                         className="w-full mt-3 py-2 px-3 rounded bg-red-50 hover:bg-red-100 text-brand-red text-xs font-bold transition-colors flex items-center justify-between cursor-pointer border border-red-200"
@@ -263,6 +284,3 @@ export const ProductDetailModal = () => {
     </AnimatePresence>
   );
 };
-
-
-
