@@ -1,26 +1,47 @@
-﻿import React, { useState, useRef, useEffect, useMemo } from 'react';
-import { useStore } from '../../context/StoreContext';
-import { LibanLogo } from '../ui/LibanLogo';
-import { Search, ShoppingBag, Heart } from 'lucide-react';
+import React, { useState, useRef, useEffect, useMemo } from "react";
+import { useStore } from "../../context/StoreContext";
+import { useAuth } from "../../context/AuthContext";
+import { LibanLogo } from "../ui/LibanLogo";
+import { Search, ShoppingBag, Heart, User, LogOut, ClipboardList } from "lucide-react";
+import { OrderHistoryDrawer } from "../account/OrderHistoryDrawer";
 
 export const Header = () => {
   const { cartCount, cartSubtotal, formatPrice, wishlist, filters, setFilters, setCartDrawerOpen, setWishlistDrawerOpen, products, setSelectedProduct } = useStore();
+  const { user, logout, setAuthModalOpen, setAuthModalTab, requireAuth } = useAuth();
   const [searchFocused, setSearchFocused] = useState(false);
+  const [accountMenuOpen, setAccountMenuOpen] = useState(false);
+  const [historyOpen, setHistoryOpen] = useState(false);
   const searchRef = useRef(null);
+  const accountRef = useRef(null);
 
   useEffect(() => {
     const handler = (e) => {
       if (searchRef.current && !searchRef.current.contains(e.target)) setSearchFocused(false);
+      if (accountRef.current && !accountRef.current.contains(e.target)) setAccountMenuOpen(false);
     };
-    document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
   }, []);
 
   const suggestions = useMemo(() => {
     if (!filters.searchQuery.trim()) return [];
     const q = filters.searchQuery.toLowerCase();
-    return products.filter((p) => p.name.toLowerCase().includes(q) || p.tagline.toLowerCase().includes(q)).slice(0, 5);
+    return products.filter((p) => p.name.toLowerCase().includes(q) || p.tagline?.toLowerCase().includes(q)).slice(0, 5);
   }, [filters.searchQuery, products]);
+
+  const handleAccountClick = () => {
+    if (user) {
+      setAccountMenuOpen((p) => !p);
+    } else {
+      setAuthModalTab("login");
+      setAuthModalOpen(true);
+    }
+  };
+
+  const handleOrderHistory = () => {
+    setAccountMenuOpen(false);
+    requireAuth(() => setHistoryOpen(true));
+  };
 
   return (
     <div className="bg-white border-b border-liban-border nav-shadow">
@@ -45,14 +66,11 @@ export const Header = () => {
             <select className="px-2 text-xs border-r border-gray-200 focus:outline-none bg-gray-50 text-gray-600">
               <option>All Categories</option>
             </select>
-            <input
-              type="text"
-              placeholder="Search products..."
+            <input type="text" placeholder="Search products..."
               value={filters.searchQuery}
               onChange={(e) => setFilters((p) => ({ ...p, searchQuery: e.target.value }))}
               onFocus={() => setSearchFocused(true)}
-              className="flex-1 px-3 py-2 text-sm focus:outline-none"
-            />
+              className="flex-1 px-3 py-2 text-sm focus:outline-none" />
             <button className="bg-brand-red px-4 py-2 text-white hover:bg-brand-redDark transition-colors">
               <Search className="w-4 h-4" />
             </button>
@@ -60,7 +78,8 @@ export const Header = () => {
           {searchFocused && filters.searchQuery.trim() && suggestions.length > 0 && (
             <div className="absolute top-full left-0 right-0 bg-white border border-liban-border shadow-lg rounded-b z-50 overflow-hidden">
               {suggestions.map((p) => (
-                <div key={p.id} onClick={() => { setSelectedProduct(p); setSearchFocused(false); }} className="flex items-center gap-3 px-4 py-2 hover:bg-gray-50 cursor-pointer">
+                <div key={p.id} onClick={() => { setSelectedProduct(p); setSearchFocused(false); }}
+                  className="flex items-center gap-3 px-4 py-2 hover:bg-gray-50 cursor-pointer">
                   <img src={p.images[0]} alt={p.name} className="w-10 h-10 object-cover rounded" referrerPolicy="no-referrer" />
                   <div>
                     <p className="text-xs font-semibold text-liban-dark">{p.name}</p>
@@ -83,7 +102,30 @@ export const Header = () => {
           )}
         </button>
 
+        <div className="relative shrink-0" ref={accountRef}>
+          <button onClick={handleAccountClick} className="relative p-2 text-liban-muted hover:text-brand-red transition-colors cursor-pointer">
+            <User className="w-5 h-5" />
+            {user && <span className="absolute -top-1 -right-1 bg-green-500 w-2.5 h-2.5 rounded-full border border-white" />}
+          </button>
+          {user && accountMenuOpen && (
+            <div className="absolute right-0 top-full mt-1 w-48 bg-white border border-gray-200 rounded shadow-lg z-50 overflow-hidden">
+              <div className="px-4 py-2 border-b border-gray-100">
+                <p className="text-xs font-bold text-liban-dark truncate">{user.first_name || user.username}</p>
+                <p className="text-xs text-gray-400 truncate">{user.email}</p>
+              </div>
+              <button onClick={handleOrderHistory} className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer">
+                <ClipboardList className="w-4 h-4" /> Order History
+              </button>
+              <button onClick={() => { logout(); setAccountMenuOpen(false); }}
+                className="w-full flex items-center gap-2 px-4 py-2 text-sm text-brand-red hover:bg-red-50 cursor-pointer">
+                <LogOut className="w-4 h-4" /> Sign Out
+              </button>
+            </div>
+          )}
+        </div>
+
       </div>
+      <OrderHistoryDrawer open={historyOpen} onClose={() => setHistoryOpen(false)} />
     </div>
   );
 };

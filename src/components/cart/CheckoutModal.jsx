@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useAuth } from '../../context/AuthContext';
 import { useStore } from '../../context/StoreContext';
 import confetti from 'canvas-confetti';
 import { X, Lock, ArrowRight, ArrowLeft, ShieldCheck, CheckCircle2, Package, Truck, Smartphone } from 'lucide-react';
@@ -11,6 +12,7 @@ const SHIPPING_METHODS = [
 ];
 
 export const CheckoutModal = () => {
+  const { user, requireAuth } = useAuth();
   const { checkoutModalOpen, setCheckoutModalOpen, cart, cartSubtotal, cartDiscount, cartTax, activeCoupon, formatPrice, createOrder, setOrderTrackerOpen } = useStore();
   const [step, setStep] = useState(1);
   const [shippingMethod, setShippingMethod] = useState(SHIPPING_METHODS[0]);
@@ -21,6 +23,7 @@ export const CheckoutModal = () => {
   const [address, setAddress] = useState({ fullName: '', email: '', phone: '', street: '', city: 'Nairobi', county: 'Nairobi', zipCode: '' });
 
   if (!checkoutModalOpen) return null;
+  if (!user) { requireAuth(() => {}); return null; }
 
   const shippingFee = shippingMethod.price;
   const finalTotal = Math.max(0, cartSubtotal - cartDiscount + shippingFee + cartTax);
