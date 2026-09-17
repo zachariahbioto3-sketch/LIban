@@ -311,7 +311,7 @@ export const UserProfileModal = ({ open, onClose }) => {
                 <button
                   key={item.id}
                   onClick={() => setActiveTab(item.id)}
-                  className={w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer }
+                  className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${activeTab === item.id ? "bg-indigo-600 text-white" : "text-slate-300 hover:bg-slate-800/60 hover:text-white"}`}
                 >
                   <div className="flex items-center gap-2.5">
                     {item.icon}
@@ -360,7 +360,7 @@ export const UserProfileModal = ({ open, onClose }) => {
                           <button
                             key={idx}
                             onClick={() => { setFormData((p) => ({ ...p, avatar_url: preset })); setAvatarPickerOpen(false); }}
-                            className={w-12 h-12 rounded-xl overflow-hidden border-2 transition-all cursor-pointer }
+                            className={`w-12 h-12 rounded-xl overflow-hidden border-2 transition-all cursor-pointer ${formData.avatar_url === preset ? "border-indigo-600 scale-105" : "border-transparent opacity-75 hover:opacity-100"}`}
                           >
                             <img src={preset} alt="" className="w-full h-full object-cover" />
                           </button>
@@ -433,7 +433,7 @@ export const UserProfileModal = ({ open, onClose }) => {
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {addresses.map((addr) => (
-                      <div key={addr.id} className={p-5 rounded-2xl bg-white border flex flex-col justify-between }>
+                      <div key={addr.id} className={`p-5 rounded-2xl bg-white border flex flex-col justify-between ${addr.is_default ? "border-indigo-500 ring-2 ring-indigo-500/10" : "border-slate-200"}`}>
                         <div>
                           <div className="flex items-center justify-between mb-2">
                             <div className="flex items-center gap-2">
@@ -482,7 +482,7 @@ export const UserProfileModal = ({ open, onClose }) => {
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {cards.map((card) => (
-                      <div key={card.id} className={p-6 rounded-2xl text-white bg-gradient-to-br  shadow-md relative overflow-hidden flex flex-col justify-between h-48 border border-white/10}>
+                      <div key={card.id} className={`p-6 rounded-2xl text-white bg-gradient-to-br ${card.card_color} shadow-md relative overflow-hidden flex flex-col justify-between h-48 border border-white/10`}>
                         <div className="absolute -right-8 -bottom-8 w-36 h-36 bg-white/10 rounded-full blur-2xl pointer-events-none" />
                         <div className="flex items-center justify-between relative z-10">
                           <span className="px-2 py-0.5 rounded-md bg-white/20 text-[10px] font-mono tracking-widest font-bold uppercase">{card.card_brand}</span>
@@ -601,7 +601,7 @@ export const UserProfileModal = ({ open, onClose }) => {
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                       {Object.values(CURRENCIES).map((curr) => (
                         <button key={curr.code} onClick={() => setCurrency(curr.code)}
-                          className={p-3 rounded-xl border text-left transition-all cursor-pointer }>
+                          className={`p-3 rounded-xl border text-left transition-all cursor-pointer ${currency === curr.code ? "border-indigo-600 bg-indigo-50/50 ring-2 ring-indigo-500/20" : "border-slate-200 hover:border-slate-300 bg-white"}`}>
                           <div className="flex items-center justify-between">
                             <span className="font-bold text-xs text-slate-900">{curr.code}</span>
                             <span className="font-mono text-xs text-indigo-600 font-bold">{curr.symbol}</span>
@@ -800,3 +800,4 @@ export const UserProfileModal = ({ open, onClose }) => {
     </div>
   );
 };
+

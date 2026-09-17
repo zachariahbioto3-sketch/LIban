@@ -4,6 +4,7 @@ import { useAuth } from "../../context/AuthContext";
 import { LibanLogo } from "../ui/LibanLogo";
 import { Search, ShoppingBag, Heart, User, LogOut, ClipboardList } from "lucide-react";
 import { OrderHistoryDrawer } from "../account/OrderHistoryDrawer";
+import { UserProfileModal } from "../account/UserProfileModal";
 
 export const Header = () => {
   const { cartCount, cartSubtotal, formatPrice, wishlist, filters, setFilters, setCartDrawerOpen, setWishlistDrawerOpen, products, setSelectedProduct } = useStore();
@@ -12,6 +13,7 @@ export const Header = () => {
   const [accountMenuOpen, setAccountMenuOpen] = useState(false);
   const [historyOpen, setHistoryOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
+  const handleOpenProfile = () => { setAccountMenuOpen(false); setProfileOpen(true); };
   const searchRef = useRef(null);
   const accountRef = useRef(null);
 
@@ -134,5 +136,7 @@ export const Header = () => {
     </div>
   );
 };
+
+
 
 

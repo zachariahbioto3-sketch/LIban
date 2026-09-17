@@ -1,4 +1,4 @@
-import React from "react";
+﻿import React from "react";
 import { AnimatePresence } from "framer-motion";
 import { AuthProvider } from "./context/AuthContext";
 import { StoreProvider } from "./context/StoreContext";
@@ -15,6 +15,7 @@ import { CheckoutModal } from "./components/cart/CheckoutModal";
 import { OrderTracker } from "./components/cart/OrderTracker";
 import { ToastContainer } from "./components/ui/ToastContainer";
 import { AuthModal } from "./components/auth/AuthModal";
+import { UserProfileModal } from "./components/account/UserProfileModal";
 
 function App() {
   return (
@@ -36,6 +37,7 @@ function App() {
           <OrderTracker />
           <ToastContainer />
           <AuthModal />
+          <UserProfileModal />
         </div>
       </StoreProvider>
     </AuthProvider>
@@ -43,3 +45,5 @@ function App() {
 }
 
 export default App;
+
+
