@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useMemo } from "react";
+﻿import React, { useState, useRef, useEffect, useMemo } from "react";
 import { useStore } from "../../context/StoreContext";
 import { useAuth } from "../../context/AuthContext";
 import { LibanLogo } from "../ui/LibanLogo";
@@ -11,6 +11,7 @@ export const Header = () => {
   const [searchFocused, setSearchFocused] = useState(false);
   const [accountMenuOpen, setAccountMenuOpen] = useState(false);
   const [historyOpen, setHistoryOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
   const searchRef = useRef(null);
   const accountRef = useRef(null);
 
@@ -113,6 +114,9 @@ export const Header = () => {
                 <p className="text-xs font-bold text-liban-dark truncate">{user.first_name || user.username}</p>
                 <p className="text-xs text-gray-400 truncate">{user.email}</p>
               </div>
+              <button onClick={handleOpenProfile} className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer">
+                <User className="w-4 h-4" /> My Profile
+              </button>
               <button onClick={handleOrderHistory} className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer">
                 <ClipboardList className="w-4 h-4" /> Order History
               </button>
@@ -126,6 +130,9 @@ export const Header = () => {
 
       </div>
       <OrderHistoryDrawer open={historyOpen} onClose={() => setHistoryOpen(false)} />
+      <UserProfileModal open={profileOpen} onClose={() => setProfileOpen(false)} />
     </div>
   );
 };
+
+
